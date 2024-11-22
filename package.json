@@ -1,10 +1,13 @@
 {
-  "name": "@codeonlyjs/core",
-  "version": "0.0.1",
+  "name": "@codeonlyjs/serve",
+  "version": "0.0.2",
   "description": "CodeOnly development server",
   "main": "server.js",
   "type": "module",
   "scripts": {},
+  "bin": {
+    "serve": "./server.js"
+  },
   "author": "Topten Software",
   "contributors": [
     {

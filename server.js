@@ -67,16 +67,6 @@ if (app.get('env') === 'production')
 else
     app.use(logger('dev', { stream: { write: (m) => console.log(m.trimEnd()) } } ));
 
-// Get "config.js"
-app.use("/config.js", (req, res, next) => {
-    if (!config.client)
-        return next();
-
-    let js = `export let config = ${JSON.stringify(config.client, null, 4)};`;
-    res.setHeader('content-type', 'text/javascript');
-    res.send(js);
-}); 
-
 // Automatically turn on bundle free live reload flag?
 if (config.livereload && config.bundleFree.livereload === undefined)
     config.bundleFree.livereload = true;
