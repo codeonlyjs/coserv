@@ -1,6 +1,6 @@
 {
   "name": "@codeonlyjs/serve",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "CodeOnly development server",
   "main": "server.js",
   "type": "module",
