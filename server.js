@@ -12,6 +12,15 @@ import merge from "deepmerge";
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
+for (let a of process.argv.slice(2))
+{
+    if (a.startsWith("NODE_ENV="))
+        process.env.NODE_ENV = a.substring(9);
+    if (a == 'production' || a == 'development')
+        process.env.NODE_ENV = a;
+
+}
+
 // Setup app
 let app = express(); 
 
@@ -45,7 +54,7 @@ let defaultConfig =
 }
 
 // Import config
-let configRaw = (await import("file://" + path.resolve("serve.config.js"))).default;
+let configRaw = (await import("file://" + path.resolve("cosrv.config.js"))).default;
 
 let config = merge.all([
     defaultConfig,

@@ -13,9 +13,7 @@
             ],
             "program": "${workspaceFolder}\\server.js",
             "cwd": "${workspaceFolder}/../MySpa",
-            "env": { 
-                "NODE_ENV": "production" 
-            }
+            "args": [ "production" ]
         }
     ]
 }
