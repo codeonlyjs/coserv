@@ -1,0 +1,29 @@
+{
+  "name": "@codeonlyjs/core",
+  "version": "0.0.1",
+  "description": "CodeOnly development server",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {},
+  "author": "Topten Software",
+  "contributors": [
+    {
+      "name": "Brad Robinson",
+      "email": "contact@toptensoftware.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeonlyjs/core.git"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@codeonlyjs/bundle-free": "github:codeonlyjs/bundle-free",
+    "cookie-parser": "^1.4.6",
+    "deepmerge": "^4.3.1",
+    "express": "^4.21.1",
+    "express-async-errors": "^3.1.1",
+    "livereload": "^0.9.3",
+    "morgan": "^1.10.0"
+  }
+}
