@@ -1,12 +1,12 @@
 {
-  "name": "@codeonlyjs/cosrv",
+  "name": "@codeonlyjs/coserv",
   "version": "0.0.4",
   "description": "CodeOnly development server",
   "main": "server.js",
   "type": "module",
   "scripts": {},
   "bin": {
-    "cosrv": "./server.js"
+    "coserv": "./server.js"
   },
   "author": "Topten Software",
   "contributors": [

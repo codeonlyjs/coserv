@@ -54,7 +54,7 @@ let defaultConfig =
 }
 
 // Import config
-let configRaw = (await import("file://" + path.resolve("cosrv.config.js"))).default;
+let configRaw = (await import("file://" + path.resolve("coserv.config.js"))).default;
 
 let config = merge.all([
     defaultConfig,
