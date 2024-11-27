@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codeonlyjs/core.git"
+    "url": "git+https://github.com/codeonlyjs/coserv.git"
   },
   "license": "Apache-2.0",
   "dependencies": {
