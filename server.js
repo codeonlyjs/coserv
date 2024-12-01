@@ -28,8 +28,10 @@ let app = express();
 let defaultConfig = 
 {
     port: 3000,
+    host: null,
     development: 
     {
+        logging: "dev",
         bundleFree: {
             path: ".",
             spa: true,
@@ -46,6 +48,7 @@ let defaultConfig =
     },
     production: 
     {
+        logging: "combined",
         bundleFree: {
             path: "./dist",
             spa: true,
@@ -64,7 +67,7 @@ let config = merge.all([
 delete config.development;
 delete config.production;
 
-console.log(JSON.stringify(config, null, 4));
+// console.log(JSON.stringify(config, null, 4));
 
 // Cookie and body parsers
 app.use(cookieParser());
@@ -73,10 +76,8 @@ app.use(express.json());
 
 // Enable logging
 console.log(`Running as ${app.get('env')}`);
-if (app.get('env') === 'production')
-    app.use(logger('combined'));
-else
-    app.use(logger('dev', { stream: { write: (m) => console.log(m.trimEnd()) } } ));
+if (config.logging)
+    app.use(logger(config.logging));
 
 // Automatically turn on bundle free live reload flag?
 if (config.livereload && config.bundleFree.livereload === undefined)
