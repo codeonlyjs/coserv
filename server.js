@@ -27,6 +27,8 @@ function showHelp()
     console.log("\nOptions:");
     showArgs({
         "    --env:<env>":   "Set NODE_ENV (typically development|production)",
+        "    --dev":         "Shortcut for --env:development",
+        "    --prod":        "Shortcut for --env:production",
         "-p, --port:<port>": "Set server port",
         "    --host:<host>": "Set server host",
         "    --show-config": "Log final configuration",
@@ -44,6 +46,14 @@ while (args.next())
     {
         case "env":
             process.env.NODE_ENV = args.value;
+            break;
+
+        case "dev":
+            process.env.NODE_ENV = "development";
+            break;
+
+        case "prod":
+            process.env.NODE_ENV = "production";
             break;
 
         case "show-config":
