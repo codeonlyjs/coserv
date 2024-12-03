@@ -3,22 +3,80 @@
 import path from 'node:path';
 import url from 'node:url';
 import express from 'express';
-import cookieParser from 'cookie-parser';
 import 'express-async-errors';
-import { bundleFree } from '@codeonlyjs/bundle-free';
 import livereload from 'livereload';
 import logger from "morgan";
 import merge from "deepmerge";
+import { bundleFree } from '@codeonlyjs/bundle-free';
+import { clargs, showArgs, showPackageVersion } from "@toptensoftware/clargs";
+
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
-for (let a of process.argv.slice(2))
+function showVersion()
 {
-    if (a.startsWith("NODE_ENV="))
-        process.env.NODE_ENV = a.substring(9);
-    if (a == 'production' || a == 'development')
-        process.env.NODE_ENV = a;
+    showPackageVersion(path.join(__dirname, "package.json"));
+}
 
+function showHelp()
+{
+    showVersion();
+
+    console.log("\nUsage: npx codeonlyjs/coserv <options> [dir]");
+
+    console.log("\nOptions:");
+    showArgs({
+        "    --env:<env>":   "Set NODE_ENV (typically development|production)",
+        "-p, --port:<port>": "Set server port",
+        "    --host:<host>": "Set server host",
+        "    --show-config": "Log final configuration",
+        "-v, --version":     "Show version info",
+        "-h, --help":        "Show this help",
+        "    dir":           "Directory to serve files from (defaults to current)"
+    });
+}
+
+let cl = {};
+let args = clargs();
+while (args.next())
+{
+    switch (args.name)
+    {
+        case "env":
+            process.env.NODE_ENV = arg.value;
+            break;
+
+        case "show-config":
+            cl.showConfig = args.boolValue;
+            break;
+
+        case "p":
+        case "port":
+            cl.port = args.intValue;
+            break;
+
+        case "host":
+            cl.host = args.value;
+            break;
+
+        case "v":
+        case "version":
+            showVersion();
+            process.exit(0);
+
+        case "h":
+        case "help":
+            showHelp();
+            process.exit(0);
+
+        case null:
+            process.chdir(args.value);
+            break;
+
+        default:
+            console.log(`Unknown command line option '${args.name}'`);
+            process.exit(7);
+    }
 }
 
 // Setup app
@@ -63,16 +121,14 @@ let config = merge.all([
     defaultConfig,
     defaultConfig[app.get('env')],
     configRaw[app.get('env')] ?? {},
+    cl,
 ]);
 delete config.development;
 delete config.production;
 
-// console.log(JSON.stringify(config, null, 4));
-
-// Cookie and body parsers
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+    
+if (cl.showConfig)
+    console.log(JSON.stringify(config, null, 4));
 
 // Enable logging
 console.log(`Running as ${app.get('env')}`);

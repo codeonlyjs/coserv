@@ -1,7 +1,8 @@
 {
   "name": "@codeonlyjs/coserv",
   "version": "0.0.7",
-  "description": "CodeOnly development server",
+  "description": "CodeOnly File Server",
+  "copyright": "Copyright © 2024-present codeonlyjs.org",
   "main": "server.js",
   "type": "module",
   "scripts": {},
@@ -22,7 +23,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@codeonlyjs/bundle-free": "github:codeonlyjs/bundle-free",
-    "cookie-parser": "^1.4.6",
+    "@toptensoftware/clargs": "github:toptensoftware/clargs",
     "deepmerge": "^4.3.1",
     "express": "^4.21.1",
     "express-async-errors": "^3.1.1",
