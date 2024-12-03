@@ -34,7 +34,7 @@ function showHelp()
         "    --show-config": "Log final configuration",
         "-v, --version":     "Show version info",
         "-h, --help":        "Show this help",
-        "    dir":           "Directory to serve files from (defaults to current)"
+        "    <dir>":         "Change current working directory"
     });
 }
 
