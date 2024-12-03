@@ -43,7 +43,7 @@ while (args.next())
     switch (args.name)
     {
         case "env":
-            process.env.NODE_ENV = arg.value;
+            process.env.NODE_ENV = args.value;
             break;
 
         case "show-config":
