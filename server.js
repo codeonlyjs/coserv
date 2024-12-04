@@ -45,7 +45,7 @@ while (args.next())
     switch (args.name)
     {
         case "env":
-            process.env.NODE_ENV = args.value;
+            process.env.NODE_ENV = args.readValue();
             break;
 
         case "dev":
@@ -57,16 +57,16 @@ while (args.next())
             break;
 
         case "show-config":
-            cl.showConfig = args.boolValue;
+            cl.showConfig = args.readBoolValue();
             break;
 
         case "p":
         case "port":
-            cl.port = args.intValue;
+            cl.port = args.readIntValue();
             break;
 
         case "host":
-            cl.host = args.value;
+            cl.host = args.readValue();
             break;
 
         case "v":
@@ -80,7 +80,7 @@ while (args.next())
             process.exit(0);
 
         case null:
-            process.chdir(args.value);
+            process.chdir(args.readValue());
             break;
 
         default:
