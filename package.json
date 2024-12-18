@@ -1,6 +1,6 @@
 {
   "name": "@codeonlyjs/coserv",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "CodeOnly File Server",
   "copyright": "Copyright © 2024-present codeonlyjs.org",
   "main": "server.js",
@@ -28,6 +28,10 @@
     "express": "^4.21.1",
     "express-async-errors": "^3.1.1",
     "livereload": "^0.9.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "rollup": "^4.24.3"  
   }
 }
