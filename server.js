@@ -7,7 +7,7 @@ import 'express-async-errors';
 import livereload from 'livereload';
 import logger from "morgan";
 import merge from "deepmerge";
-import { bundleFree } from '@codeonlyjs/bundle-free';
+import { bundleFreeMiddleware } from '@codeonlyjs/bundle-free';
 import { clargs, showArgs, showPackageVersion } from "@toptensoftware/clargs";
 
 
@@ -92,51 +92,52 @@ while (args.next())
 // Setup app
 let app = express(); 
 
-// Default config
+// Config Defaults
 let defaultConfig = 
 {
     port: 3000,
     host: null,
+    baseDir: process.cwd(),
     development: 
     {
+        static: [
+            { url: "/", path: "." },
+        ],
         logging: "dev",
-        bundleFree: {
-            path: ".",
-            spa: true,
-            node_modules: "./node_modules",
-            inYaFace: true,
-        },
-        livereload: {
-            options: {
-            },
-            watch: [
-                ".",
-            ]
-        }
+        spa: true,
+        inYaFace: true,
+        watch: [
+            ".",
+        ],
     },
     production: 
     {
         logging: "combined",
-        bundleFree: {
-            path: "./dist",
-            spa: true,
-        }
+        spa: true,
+        static: [
+            { url: "/", path: "./dist" },
+        ],
     }
 }
 
 // Import config
 let configRaw = (await import("file://" + path.resolve("coserv.config.js"))).default;
 
+// Merge configurations
 let config = merge.all([
     defaultConfig,
     defaultConfig[app.get('env')],
     configRaw[app.get('env')] ?? {},
     cl,
-]);
+], { arrayMerge: (d, s, opt) => s });
 delete config.development;
 delete config.production;
 
-    
+// If watch specified, also load live reload
+if (config.watch && config.livereload === undefined)
+    config.livereload = {};
+
+// Show config?
 if (cl.showConfig)
     console.log(JSON.stringify(config, null, 4));
 
@@ -145,23 +146,34 @@ console.log(`Running as ${app.get('env')}`);
 if (config.logging)
     app.use(logger(config.logging));
 
-// Automatically turn on bundle free live reload flag?
-if (config.livereload && config.bundleFree.livereload === undefined)
-    config.bundleFree.livereload = true;
-
 // Bundle free
-app.use(bundleFree(config.bundleFree));
+app.use(bundleFreeMiddleware(config));
+
+// Static files
+for (let s of config.static)
+{
+    app.use(s.url, express.static(path.join(config.baseDir, s.path)));
+}
 
 // Load reload?
 if (config.livereload)
 {
     // Live reload
-    let lrs = livereload.createServer(config.livereload.options ?? {});
-    lrs.watch(config.livereload.watch);
+    let lrs = livereload.createServer(config.livereload);
+    lrs.watch(config.watch);
 }
 
-// Not found
+// Not found handler
 app.use((req, res, next) => {
+
+    // SPA handling
+    if (config.spa && (req.method == "GET" || req.method == "HEAD"))
+    {
+        req.url = "/";
+        res.sendFile(path.join(config.baseDir, "index.html"));
+        return;
+    }
+
     let err = new Error(`Not Found - ${req.originalUrl}`);
     err.status = 404;
     next(err);
