@@ -97,14 +97,14 @@ let defaultConfig =
 {
     port: 3000,
     host: null,
-    baseDir: process.cwd(),
+    static: [
+        { url: "/", path: "." },
+    ],
+    spa: true,
     development: 
     {
-        static: [
-            { url: "/", path: "." },
-        ],
+        baseDir: process.cwd(),
         logging: "dev",
-        spa: true,
         inYaFace: true,
         watch: [
             ".",
@@ -113,10 +113,7 @@ let defaultConfig =
     production: 
     {
         logging: "combined",
-        spa: true,
-        static: [
-            { url: "/", path: "./dist" },
-        ],
+        baseDir: path.join(process.cwd(), "dist"),
     }
 }
 
@@ -150,9 +147,14 @@ if (config.logging)
 app.use(bundleFreeMiddleware(config));
 
 // Static files
+let spaFallback=null;
 for (let s of config.static)
 {
-    app.use(s.url, express.static(path.join(config.baseDir, s.path)));
+    let mw = express.static(path.join(config.baseDir, s.path));
+    app.use(s.url, mw);
+
+    if (s.url == "/")
+        spaFallback = mw;
 }
 
 // Load reload?
@@ -163,16 +165,24 @@ if (config.livereload)
     lrs.watch(config.watch);
 }
 
-// Not found handler
-app.use((req, res, next) => {
+// SPA fallback
+app.use(async (req, res, next) => {
 
     // SPA handling
     if (config.spa && (req.method == "GET" || req.method == "HEAD"))
     {
-        req.url = "/";
-        res.sendFile(path.join(config.baseDir, "index.html"));
-        return;
+        if (spaFallback)
+        {
+            req.url = "/";
+            return spaFallback(req, res, next);
+        }
     }
+
+    next();
+});
+
+// Not found handler
+app.use((req, res, next) => {
 
     let err = new Error(`Not Found - ${req.originalUrl}`);
     err.status = 404;
