@@ -9,6 +9,7 @@ import logger from "morgan";
 import merge from "deepmerge";
 import { bundleFreeMiddleware } from '@codeonlyjs/bundle-free';
 import { clargs, showArgs, showPackageVersion } from "@toptensoftware/clargs";
+import { staticEx } from "./staticEx.js"
 
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -124,6 +125,7 @@ let configRaw = (await import("file://" + path.resolve("coserv.config.js"))).def
 let config = merge.all([
     defaultConfig,
     defaultConfig[app.get('env')],
+    configRaw,
     configRaw[app.get('env')] ?? {},
     cl,
 ], { arrayMerge: (d, s, opt) => s });
@@ -134,11 +136,19 @@ delete config.production;
 if (config.watch && config.livereload === undefined)
     config.livereload = {};
 
+// If config.spa set then make sure at least one static path has spa option
+// set and if not, set it on the last one
+if (config.spa && config.static && config.static.length > 0 && config.static.every(x => !x.spa))
+{
+    config.static[config.static.length - 1].spa = true;
+    delete config.spa;
+}
+
 // Show config?
 if (cl.showConfig)
     console.log(JSON.stringify(config, null, 4));
 
-// Enable logging
+// Enable logging?
 console.log(`Running as ${app.get('env')}`);
 if (config.logging)
     app.use(logger(config.logging));
@@ -147,14 +157,9 @@ if (config.logging)
 app.use(bundleFreeMiddleware(config));
 
 // Static files
-let spaFallback=null;
 for (let s of config.static)
 {
-    let mw = express.static(path.join(config.baseDir, s.path));
-    app.use(s.url, mw);
-
-    if (s.url == "/")
-        spaFallback = mw;
+    app.use(s.url, staticEx(path.join(config.baseDir, s.path), s));
 }
 
 // Load reload?
@@ -164,22 +169,6 @@ if (config.livereload)
     let lrs = livereload.createServer(config.livereload);
     lrs.watch(config.watch);
 }
-
-// SPA fallback
-app.use(async (req, res, next) => {
-
-    // SPA handling
-    if (config.spa && (req.method == "GET" || req.method == "HEAD"))
-    {
-        if (spaFallback)
-        {
-            req.url = "/";
-            return spaFallback(req, res, next);
-        }
-    }
-
-    next();
-});
 
 // Not found handler
 app.use((req, res, next) => {
