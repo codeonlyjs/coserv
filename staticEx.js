@@ -18,7 +18,7 @@ export function staticEx(basedir, options)
             // If spa enabled, then try again with the root url
             if (options.spa && req.url !== "/")
             {
-                req.url = "/";
+                req.url = "/" + (options.index ? options.index : "index.html");
                 staticMiddleware(req, res, next);
             }
             else
