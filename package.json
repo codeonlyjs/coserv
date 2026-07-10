@@ -1,6 +1,6 @@
 {
   "name": "@codeonlyjs/coserv",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "CodeOnlyJS Development Server",
   "copyright": "Copyright © 2024-present codeonlyjs.org",
   "main": "server.js",
