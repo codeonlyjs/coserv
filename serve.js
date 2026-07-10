@@ -19,7 +19,7 @@ export function serve(config)
     {
         port: 3000,
         host: null,
-        static: [
+        serve: [
             { url: "/", path: "." },
         ],
         spa: true,
@@ -54,9 +54,9 @@ export function serve(config)
 
     // If config.spa set then make sure at least one static path has spa option
     // set and if not, set it on the last one
-    if (config.spa && config.static && config.static.length > 0 && config.static.every(x => !x.spa))
+    if (config.spa && config.serve && config.serve.length > 0 && config.serve.every(x => !x.spa))
     {
-        config.static[config.static.length - 1].spa = true;
+        config.serve[config.serve.length - 1].spa = true;
         delete config.spa;
     }
 
@@ -72,10 +72,36 @@ export function serve(config)
     // Bundle free
     app.use(bundleFreeMiddleware(config));
 
-    // Static files
-    for (let s of config.static)
+    // Serve 
+    for (let s of config.serve)
     {
-        app.use(s.url, staticEx(path.resolve(config.baseDir, s.path), s));
+        if (s.path)
+        {
+            app.use(s.url, staticEx(path.resolve(config.baseDir, s.path), s));
+            continue;
+        }
+
+        if (s.handler)
+        {
+            app.use(s.url, s.handler);
+            continue;
+        }
+
+        if (s.json)
+        {
+            app.use(s.url, (req, res) => res.json(s.json));
+            continue;
+        }
+
+        if (s.text)
+        {
+            app.use(s.url, (req, res) => {
+                res.set('Content-Type', s.contentType ?? 'text/plain');
+                res.send(s.text)
+            });
+            continue;
+        }
+
     }
 
     // Load reload?
