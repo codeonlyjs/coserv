@@ -75,7 +75,7 @@ export function serve(config)
     // Static files
     for (let s of config.static)
     {
-        app.use(s.url, staticEx(path.join(config.baseDir, s.path), s));
+        app.use(s.url, staticEx(path.resolve(config.baseDir, s.path), s));
     }
 
     // Load reload?
