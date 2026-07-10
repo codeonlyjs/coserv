@@ -3,11 +3,11 @@
   "version": "2.0.5",
   "description": "CodeOnlyJS Development Server",
   "copyright": "Copyright © 2024-present codeonlyjs.org",
-  "main": "server.js",
+  "main": "serve.js",
   "type": "module",
   "scripts": {},
   "bin": {
-    "coserv": "./server.js"
+    "coserv": "./coserv.js"
   },
   "author": "Topten Software",
   "contributors": [
