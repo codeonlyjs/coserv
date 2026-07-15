@@ -5,7 +5,9 @@
   "copyright": "Copyright © 2024-present codeonlyjs.org",
   "main": "serve.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "bump": "npm version patch && git push --follow-tags"
+  },
   "bin": {
     "coserv": "./coserv.js"
   },
